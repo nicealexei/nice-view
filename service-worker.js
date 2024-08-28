@@ -84,9 +84,9 @@ function showNotification(data) {
   }
   self.registration.showNotification(heading, {
     body: 'Agent sent you a new message.',
-    icon: 'assets/images/logo192.png',
+    icon: 'assets/images/notification-icon96.png',
     badge: 'assets/images/logo192.png',
-    image: 'assets/images/notification-icon.png',
+    image: 'assets/images/notification-image192.png',
     tag: 'chat-notification',
     data: notificationData
   }).then(() => {
