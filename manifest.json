@@ -1,7 +1,7 @@
 {
-  "short_name": "NiceView PWA",
-  "name": "NiceView Demo Website PWA",
-  "description": "NiceView Demo Website for Digital Presales - Progressive Web App",
+  "short_name": "NICEview Demo PWA",
+  "name": "NICEview Demo PWA",
+  "description": "NICEview Demo PWA",
   "icons": [
     {
       "src": "assets/images/favicon.ico",

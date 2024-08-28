@@ -22,7 +22,7 @@ self.addEventListener('message', event => {
         }
       }  
       if (!isPWAInForeground) {
-        showNotification();
+        showNotification(event.data);
       }
     }).catch(error => {
       console.error('Error matching clients:', error);
@@ -33,7 +33,23 @@ self.addEventListener('message', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil(
-    clients.openWindow(event.notification.data.url)
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      if (clientList.length > 0) {
+        let client = clientList[0];
+        for (let i = 0; i < clientList.length; i++) {
+          if (clientList[i].url === event.notification.data.url && 'focus' in clientList[i]) {
+            client = clientList[i];
+            break;
+          }
+        }
+        if ('focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(event.notification.data.url);
+      }
+    })
   );
 });
 
@@ -56,28 +72,26 @@ self.addEventListener('activate', event => {
 
 
 // Function to show notification
-function showNotification() {
+function showNotification(data) {
   console.log('Sending Notification...');
-  self.registration.showNotification('Hello!', {
+  let heading = 'Your chat with us';
+  let notificationData = {
+    id: 'id-' + Date.now(),
+    url: "%REACT_APP_PUBLIC_DOMAIN%%REACT_APP_PUBLIC_URL%"
+  };
+  if(data && data.companyName){
+    heading = `Your chat with ${data.companyName}`;
+  }
+  self.registration.showNotification(heading, {
     body: 'Agent sent you a new message.',
     icon: 'assets/images/logo192.png',
-    badge: 'assets/images/logo192.png'
+    badge: 'assets/images/logo192.png',
+    image: 'assets/images/notification-icon.png',
+    tag: 'chat-notification',
+    data: notificationData
   }).then(() => {
     console.log('Notification displayed successfully.');
   }).catch(error => {
     console.error('Error displaying notification:', error);
   });
-}
-
-// Function to send notifications at intervals
-function sendNotifications() {
-  let count = 0;
-  const interval = setInterval(() => {
-    if (count < 5) {
-      showNotification();
-      count++;
-    } else {
-      clearInterval(interval);
-    }
-  }, 15000); // 15 seconds interval
 }
